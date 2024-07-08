@@ -59,7 +59,7 @@
 <body>
     <div class="container">
         <h2>Company Login Form</h2>
-        <form action="/company_login" method="POST" id="companyLoginForm">
+        <form id="companyLoginForm">
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" required>
@@ -71,5 +71,24 @@
             <button type="submit">Login</button>
         </form>
     </div>
+    <script>
+        document.getElementById('companyLoginForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const formData = new FormData(event.target);
+            const formObject = Object.fromEntries(formData.entries());
+
+            const response = await fetch('http://localhost:3431/Company/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formObject),
+            });
+
+            const result = await response.text();
+            alert(result); // Display the server response
+        });
+    </script>
 </body>
 </html>

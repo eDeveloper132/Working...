@@ -7,6 +7,7 @@ import userRoute from "./Routes/User.mjs"
 import callRoute from "./Routes/Call.mjs"
 import path from "path";
 import companyRoute from "./Routes/Company.mjs"
+import connection from "./DB/db.mjs";
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -24,6 +25,7 @@ app.listen(PORT, () => {
 app.get("/", (req, res) => {
     res.sendFile(path.resolve(__dirname, "./Public/index.html"));
 });
+await connection();
 
 app.use("/Admin/",adminRoute);
 app.use("/User/",userRoute);

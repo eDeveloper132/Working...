@@ -48,4 +48,25 @@ router.post("/", async (req, res) => {
         res.status(400).send({ message: "Data Not Received" });
     }
 });
+
+
+router.get("/login/", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "../User/login.html"));
+});
+
+router.post("/login/", async (req, res) => {
+    const { email, password } = req.body;
+    console.log(email, password);
+    try {
+        const user = await UserModel.findOne({ Email: email, Password: password });
+        if (user) {
+            res.send({ message: "Login Successfully", user });
+        } else {
+            res.send({ message: "Login Failed" });
+        }
+    } catch (error) {
+        console.error("Error during login:", error);
+        res.status(500).send({ message: "Error during login" });
+    }
+});
 export default router;

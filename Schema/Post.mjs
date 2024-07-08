@@ -30,11 +30,15 @@ const Company = new Schema({
 })
 
 const Call = new Schema({
-  Caller_Id: {type: String , required: true},
-  PhoneCode:{type:String||Number , required: true} ,
-  PhoneNumber:{type:Number , required: true} ,
+  Caller_Id: {type: String , required: false},
+  Status:{type:String||Number , required: false} ,
+  Message:{type: String , required: false} ,
   Description:{type:String , required: false}
 })
+// Caller_Id: Bland_res[0],
+//         Status: Bland_res[1],
+//         Message: Bland_res[2],
+//         Description: dataSaver[0]
 
 const AdminModel = model("Admin", Admin);
 const UserModel = model("User", User);

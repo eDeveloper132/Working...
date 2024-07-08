@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Company Registration Form</title>
     <style>
         body {
@@ -59,7 +61,7 @@
 <body>
     <div class="container">
         <h2>Company Registration Form</h2>
-        <form>
+        <form id="registrationForm">
             <div class="form-group">
                 <label for="companyName">Company Name</label>
                 <input type="text" id="companyName" name="companyName" required>
@@ -83,5 +85,24 @@
             <button type="submit">Register</button>
         </form>
     </div>
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const formData = new FormData(event.target);
+            const formObject = Object.fromEntries(formData.entries());
+
+            const response = await fetch('http://localhost:3431/Company/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formObject),
+            });
+
+            const result = await response.text();
+            alert(result); // Display the server response
+        });
+    </script>
 </body>
 </html>

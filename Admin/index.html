@@ -86,21 +86,23 @@
       
     </div>
     <script>
-      document.getElementById('registrationForm').addEventListener('submit', function(event) {
-        let valid = true;
-        const form = event.target;
+        document.getElementById('registrationForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the default form submission
 
-        // Validate Phone Number
-        const phoneNumber = form['PhoneNumber'].value;
-        if (!/^\d{10}$/.test(phoneNumber)) {
-            alert('Phone number must be 10 digits.');
-            valid = false;
-        }
+            const formData = new FormData(event.target);
+            const formObject = Object.fromEntries(formData.entries());
 
-        if (!valid) {
-            event.preventDefault();
-        }
-      });
+            const response = await fetch('http://localhost:3431/Admin/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formObject),
+            });
+
+            const result = await response.text();
+            alert(result); // Display the server response
+        });
     </script>
 </body>
 </html>
