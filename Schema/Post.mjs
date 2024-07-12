@@ -32,7 +32,7 @@ const Company = new Schema({
 const Call = new Schema({
   Caller_Id:{type: String , required: false},
   Status:{type:String||Number , required: false},
-  Phone_Number:{type:String||Number , required: false},
+  to:{type:String||Number , required: false},
   Message:{type: String , required: false} ,
   Description:{type:String , required: false}
 })

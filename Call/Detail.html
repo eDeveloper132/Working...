@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQ7EdQwfS0H4hJ9Ff2ilMebNFA0hVb2z8AFTUsN0x0AS0tB3EyduqlG4C" crossorigin="anonymous">
+</head>
+<body>
+    <div class="my-2 mx-2">
+        <h1>Call Details</h1>
+        </div>
+    <div class="my-2 mx-2">
+        <div id="fetchDetailContainer"></div>
+    </div>
+    <script>        
+    async function fetchDetail() {
+        try {
+            const response = await fetch('/fetchDetail');
+            const data = await response.json();
+            document.getElementById('fetchDetailContainer').innerText = JSON.stringify(data, null, 2);
+        } catch (error) {
+            console.error('Error fetching detail:', error);
+        }
+    }
+    fetchDetail();
+    </script>
+
+</body>
+</html>
+</body>
+</html>
