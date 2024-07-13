@@ -59,15 +59,6 @@ const sender = async () => {
 router.get("/", (req, res) => {
     res.sendFile(path.resolve(__dirname, "../Call/index.html"));
 });
-router.post('/showCallDetail', (req, res) => {
-    const { callId } = req.body; // Assuming callId is sent in the request body as JSON
-
-    // Process the callId as needed (e.g., save to database, fetch related data)
-    console.log(callId);
-
-    // Example response
-    res.status(200).send('Received callId successfully');
-});
 const dataSaver = [];
 router.get("/showCall", (req, res) => {
     res.sendFile(path.resolve(__dirname, "../Call/show.html"));
@@ -75,6 +66,7 @@ router.get("/showCall", (req, res) => {
 router.get("/showCallDetail", (req, res) => {
     res.sendFile(path.resolve(__dirname, "../Call/Detail.html"));
 });
+
 
 
 const uploadCallDatabase = async () => {

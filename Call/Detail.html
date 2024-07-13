@@ -3,38 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQ7EdQwfS0H4hJ9Ff2ilMebNFA0hVb2z8AFTUsN0x0AS0tB3EyduqlG4C" crossorigin="anonymous">
-</head>
-<body>
-    <div class="my-2 mx-2">
-        <h1>Call Details</h1>
-        </div>
-    <div class="my-2 mx-2">
-        <div id="fetchDetailContainer"></div>
-    </div>
-    <script>        
-    async function fetchDetail() {
-        try {
-            const response = await fetch('/fetchDetail');
-            const data = await response.json();
-            document.getElementById('fetchDetailContainer').innerText = JSON.stringify(data, null, 2);
-        } catch (error) {
-            console.error('Error fetching detail:', error);
+    <title>Call Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <style>
+        /* Global body styles */
+        body {
+            background-color: #f8f9fa; /* Light gray background */
+            color: #343a40; /* Dark text color */
         }
-    }
-    fetchDetail();
-    </script>
 
-</body>
-</html>
+        /* Card styles for call details */
+        .card {
+            margin-bottom: 1rem;
+            border: 1px solid #ccc; /* Light gray border */
+            border-radius: 8px;
+        }
+
+        /* Header styles for call detail cards */
+        .card-header {
+            background-color: #007bff; /* Blue header background */
+            color: #fff; /* White header text color */
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.125); /* Darker border bottom */
+        }
+
+        /* Body styles for call detail cards */
+        .card-body {
+            padding: 1rem;
+        }
+
+        /* Margin bottom for rows inside card body */
+        .card-body .row {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Bold font for labels in grid layout */
+        .col-sm-3 {
+            font-weight: bold;
+        }
+
+        /* Container styles for call variables */
+        .variables-container {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border: 1px solid #ccc; /* Light gray border */
+            border-radius: 5px;
+            background-color: #fff; /* White background */
+        }
+
+        /* Margin bottom for rows inside variables container */
+        .variables-container .row {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Custom styles for audio element */
+        audio {
+            width: 100%; /* Full width */
+            max-width: 300px; /* Maximum width */
+            height: 40px; /* Height adjustment */
+            margin-top: 1rem; /* Top margin */
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-4">
+        <h1 class="mb-4">Call Details</h1>
+        <div id="fetchDataContainer">
+            <!-- Call details will be populated dynamically -->
+        </div>
+    </div>
+
+    <script>
+        // Function to fetch call details from server and display them
+        async function fetchDetail() {
+            try {
+                // Fetch call details from '/fetchDetail' endpoint
+                const response = await fetch('/fetchDetail');
+                const data = await response.json(); // Parse JSON response
+    
+                // Rename callRecordingUrl to callRecording
+                if (data.callRecordingUrl) {
+                    data.callRecording = data.callRecordingUrl;
+                    delete data.callRecordingUrl;
+                }
+    
+                // Function to recursively convert object to HTML string
+                function objectToHtml(obj) {
+                    let html = '';
+                    for (const key in obj) {
+                        if (typeof obj[key] === 'object' && obj[key] !== null) {
+                            // If value is an object, recursively call objectToHtml
+                            html += `<div class="row mb-2">
+                                        <div class="col-sm-3">${key}</div>
+                                        <div class="col-sm-9">${objectToHtml(obj[key])}</div>
+                                    </div>`;
+                        } else {
+                            // If value is not an object, display as key-value pair
+                            if (key === 'callRecording') { // Change key to callRecording
+                                // Special handling for callRecording to display as audio element
+                                html += `<div class="row mb-2">
+                                            <div class="col-sm-3">Call Recording</div>
+                                            <div class="col-sm-9">
+                                                <audio controls style="width: 100%; max-width: 300px; height: 40px;">
+                                                    <source src="${obj[key]}" type="audio/wav">
+                                                    Your browser does not support the audio element.
+                                                </audio>
+                                            </div>
+                                        </div>`;
+                            } else {
+                                // Regular key-value pair display
+                                html += `<div class="row mb-2">
+                                            <div class="col-sm-3">${key}</div>
+                                            <div class="col-sm-9">${obj[key]}</div>
+                                        </div>`;
+                            }
+                        }
+                    }
+                    return html;
+                }
+    
+                // Display the data as HTML in the fetchDataContainer
+                document.getElementById('fetchDataContainer').innerHTML = objectToHtml(data);
+            } catch (error) {
+                // Handle errors when fetching or displaying data
+                console.error('Error fetching detail:', error);
+                document.getElementById('fetchDataContainer').innerText = 'Error fetching detail';
+            }
+        }
+    
+        // Call fetchDetail function to initiate fetching and displaying call details
+        fetchDetail();
+    </script>
+    
 </body>
 </html>

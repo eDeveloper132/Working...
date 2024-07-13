@@ -59,8 +59,8 @@ async function fetchData() {
         }
         const data = await response.json();
         const callIds = data.calls.map(call => call.c_id);
-        console.log(callIds);
-        return callIds;
+        
+        return {data , callIds};
     } catch (err) {
         console.error('Fetch error:', err);
         return null;
@@ -108,12 +108,14 @@ const fetchDetail = async()=> {
             Inbound: data.inbound , 
             callSummary: data.summary , 
             callTranscript: data.concatenated_transcript ,
-            callStatus: data.status}
-        dataReceiver.splice(0, 1);
+            callStatus: data.status ,
+            callVariables: data.variables ,
+            callRecordingUrl: data.recording_url ,
+            callRecord: data.record ,
+            callPrice : data.price}
         return Customize;
     } catch (err) {
         console.error(err);
-        dataReceiver.splice(0, 1);
         return null;
     }
 }
@@ -121,6 +123,7 @@ const fetchDetail = async()=> {
 // Route to fetch detail
 app.get("/fetchDetail", async (req, res) => {
     const callDetail = await fetchDetail();
+    dataReceiver.splice(0, 1);
     res.json(callDetail);
 });
 

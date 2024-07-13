@@ -3,13 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Call Id's</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <style>
+        .card {
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+        }
+        .card-header {
+            background-color: #343a40;
+            color: #fff;
+        }
+        .card-body .row {
+            margin-bottom: 0.5rem;
+        }
+        .card-body .col-sm-3 {
+            font-weight: bold;
+        }
+        .variables-container {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .variables-container .row {
+            margin-bottom: 0.5rem;
+        }
+    </style>
 </head>
 <body>
-    <div class="my-2 mx-2">
-        <h1>Call Data</h1>
-        <div id="fetchDataContainer"></div>
+    <div class="container my-4">
+        <h1 class="mb-4">Call Id's</h1>
+        <div id="fetchDataContainer">
+            <!-- Call details will be populated dynamically -->
+        </div>
     </div>
     <script>
         async function fetchData() {
@@ -18,23 +46,94 @@
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                const callIds = await response.json();
+                const { data } = await response.json();
 
-                const container = document.getElementById('fetchDataContainer');
-                container.innerHTML = ''; // Clear previous content
+                const fetchDataContainer = document.getElementById('fetchDataContainer');
+                fetchDataContainer.innerHTML = ''; // Clear previous content
 
-                callIds.forEach((callId, index) => {
-                    const listItem = document.createElement('li');
-                    listItem.classList.add('list-group-item');
-                    const anchor = document.createElement('a');
-                    anchor.href = '#';
-                    anchor.innerText = `Call ID ${index + 1}: ${callId}`;
-                    anchor.addEventListener('click', (event) => {
-                        event.preventDefault();
-                        exportCallId(callId);
+                // Define headers and corresponding data keys
+                const fields = [
+                    { label: 'Call ID', key: 'c_id' },
+                    { label: 'Created At', key: 'created_at' },
+                    { label: 'Inbound', key: 'inbound' },
+                    { label: 'To', key: 'to' },
+                    { label: 'From', key: 'from' },
+                    { label: 'Recording', key: 'record' },
+                    { label: 'Call Length', key: 'call_length' },
+                    { label: 'Cost', key: 'price' },
+                    { label: 'Status', key: 'status' },
+                    { label: 'Summary', key: 'summary' },
+                    { label: 'Variables', key: 'variables' }
+                ];
+
+                // Populate call details
+                data.calls.forEach(call => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+
+                    const cardHeader = document.createElement('div');
+                    cardHeader.className = 'card-header';
+                    cardHeader.innerText = `Call ID: ${call.c_id}`;
+                    card.appendChild(cardHeader);
+
+                    const cardBody = document.createElement('div');
+                    cardBody.className = 'card-body';
+
+                    fields.forEach(field => {
+                        const row = document.createElement('div');
+                        row.className = 'row';
+
+                        const colLabel = document.createElement('div');
+                        colLabel.className = 'col-sm-3';
+                        colLabel.innerText = field.label;
+                        row.appendChild(colLabel);
+
+                        const colValue = document.createElement('div');
+                        colValue.className = 'col-sm-9';
+                        let value = call[field.key] || '';
+                        if (field.key === 'c_id') {
+                            const anchor = document.createElement('a');
+                            anchor.href = '#';
+                            anchor.innerText = value;
+                            anchor.addEventListener('click', (event) => {
+                                event.preventDefault();
+                                exportCallId(value);
+                            });
+                            colValue.appendChild(anchor);
+                        } else if (field.key === 'variables') {
+                            if (typeof value === 'object' && value !== null) {
+                                const variablesContainer = document.createElement('div');
+                                variablesContainer.className = 'variables-container';
+                                Object.keys(value).forEach(varKey => {
+                                    const varRow = document.createElement('div');
+                                    varRow.className = 'row';
+
+                                    const varKeyCol = document.createElement('div');
+                                    varKeyCol.className = 'col-sm-4';
+                                    varKeyCol.innerText = varKey;
+                                    varRow.appendChild(varKeyCol);
+
+                                    const varValueCol = document.createElement('div');
+                                    varValueCol.className = 'col-sm-8';
+                                    varValueCol.innerText = value[varKey];
+                                    varRow.appendChild(varValueCol);
+
+                                    variablesContainer.appendChild(varRow);
+                                });
+                                colValue.appendChild(variablesContainer);
+                            } else {
+                                colValue.innerText = 'N/A';
+                            }
+                        } else {
+                            colValue.innerText = value;
+                        }
+                        row.appendChild(colValue);
+
+                        cardBody.appendChild(row);
                     });
-                    listItem.appendChild(anchor);
-                    container.appendChild(listItem);
+
+                    card.appendChild(cardBody);
+                    fetchDataContainer.appendChild(card);
                 });
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -55,7 +154,6 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 console.log('Call ID data sent successfully:', callId);
-                // Redirect to the showCallDetail route
                 window.location.href = 'http://localhost:3431/Call/showCallDetail';
             } catch (error) {
                 console.error('Error sending call ID data:', error);
